@@ -21,3 +21,10 @@ app.listen(PORT, () => {
     console.log (`Server running on port ${PORT}`);
     console.log (`Base URI: http://localhost:${PORT}${BASE_URI}`);
 });
+
+// Import the routes
+const apiRoutes = require('./src/routes/apiRoutes');
+
+// Tell the app to use them
+// All URLs will start with /api/v1 (from your .env file)
+app.use(process.env.BASE_URI, apiRoutes);

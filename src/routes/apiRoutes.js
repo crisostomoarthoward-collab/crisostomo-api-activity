@@ -1,95 +1,22 @@
 const express = require('express');
-const router = express.Router();
-const data = require('../models/dishmodel');
+const router = express. Router();
 
-//GET
-router.get('/dishes', (req, res) => {
-    const { category, price, name, isVegetarian } =req.query;
+// Import the Controller
+const {
+    getAllDishes,
+    createDish,
+    getDishById,
+    updateDish,
+    deleteDish,
+} = require('../controllers/dishController');
 
-    let filteredDishes = data
-    .filter(
-        (dish) =>
-            !category || dish.category.toLowerCase() === category.toLowerCase(),
-    )
-    .filter((dish) => !price || dish.price < parseFloat(price))
-    .filter(
-        (dish) => !name || dish.name.toLowerCase().includes(name.toLowerCase()),
-    )
-    .filter(
-        (dish) =>
-            isVegetarian === undefined ||
-            dish.isVegetarian === (isVegetarian === 'true'),
-    );
-
-    return filteredDishes.length === 0
-    ? res.status(404).json({
-        status: 404,
-        message: 'No dishes found matching the criteria',
-    })
-    : res.status(200).json({
-        status:200,
-        message: 'Retrieved dishes successfully',
-        data: filteredDishes,
-    });
-});
-
-//POST
-router.post('/dishes', (req, res) => {
-    const { name, price, category, isVegetarian } = req.body || {};
-
-    if (!name || !price || !category || isVegetarian) {
-        return res.status(400).json({
-            status: 400,
-            message:
-                'Bad Request: Name, Price, Category, and IsVegetarian are required',
-        });
-    }
-
-    const newItem = { id: data.length + 1, name, price, category, isVegetarian };
-    data.push(newItem);
-    res.status(201).json({
-        status: 201,
-        message: 'Dish created successfully',
-        data: newItem,
-    });
-});
-
-//PUT
-router.put('/dishes/:id', (req, res) => {
-    const id = parseInt(req.params.id);
-    const index = data.findIndex((d) => d.id === id);
-    if (index === -1) {
-        return res.status(404).json({
-            status: 404,
-            message: `Dish with ID ${id} not found`,
-        })
-    }
-
-    data[index] = {id, ...req.body };
-    res.status(200).json({
-        status: 200,
-        message: 'Dish updated successfully',
-        data: data[index],
-    });
-});
-
-
-// DELETE
-router.delete('/dishes/:id', (req, res) => {
-    const id = parseInt(req.params.id);
-    const index = data.findIndex((d) => d.id === id);
-    if(index === -1) {
-        return res.status(404).json({
-            status: 404,
-            message: `Dish with ID ${id} not found`,
-        });
-    }
-
-    data.splice(index, 1);
-    res.status(203).json({
-        status: 203,
-        message: 'Dish deleted successfully',
-    });
-});
-
+// 1. If user goes to GET / (Show menu) Ask Chef to getAllDishes
+router.get('/dishes', getAllDishes); 
+// 2. If user sends POST / (New Order)  Ask Chef to createDish
+router.post('/dishes', createDish);
+// 3. If user goes to GET /:id (Ask for specific meal) Ask Chef to getDishById
+router.get('/dishes/:id', getDishById);
+// 4. If user sends PUT /:id (Change meal) Ask Chef to updateDish
+router.put('/dishes/:id', updateDish);
+// 5. If user sends DELETE /:id (Cancel meal) router.delete('/dishes/:id', deleteDish); Ask Chef to deleteDish
 module.exports = router;
