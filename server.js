@@ -1,30 +1,25 @@
-//server.js
-require ('dotenv').config();
+require('dotenv').config();
 const express = require('express');
 const connectDB = require('./src/config/db');
 const app = express();
+
+// Connect to DB
 connectDB();
 
-//Middleware
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Load Config
-const PORT = process.env.port || 3000;
-const BASE_URI = process.env.BASE_URI || '/api/v1/';
+const PORT = process.env.PORT || 3000;
+const BASE_URI = process.env.BASE_URI || '/api/v1';
 
-// Import Routes 
-const apiRoutes = require('./src/routes/apiRoutes');
+// Import Routes (ISA LANG)
+const apiRoutes = require('./src/routes/apiRoutes'); // fixed path, no extra space
 app.use(BASE_URI, apiRoutes);
 
+// Start Server
 app.listen(PORT, () => {
-    console.log (`Server running on port ${PORT}`);
-    console.log (`Base URI: http://localhost:${PORT}${BASE_URI}`);
+  console.log(`Server running on port ${PORT}`);
+  console.log(`Base URI: http://localhost:${PORT}${BASE_URI}`);
 });
-
-// Import the routes
-const apiRoutes = require('./src/routes/apiRoutes');
-
-// Tell the app to use them
-// All URLs will start with /api/v1 (from your .env file)
-app.use(process.env.BASE_URI, apiRoutes);
